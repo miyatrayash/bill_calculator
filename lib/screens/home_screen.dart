@@ -1,3 +1,7 @@
+
+import 'package:awesome_icons/awesome_icons.dart';
+import 'package:bill_calculator/helpers/custom_snackbar.dart';
+import 'package:bill_calculator/helpers/file_handler.dart';
 import 'package:bill_calculator/models/Item.dart';
 import 'package:bill_calculator/providers/items_provider.dart';
 import 'package:bill_calculator/screens/add_item_screen.dart';
@@ -26,8 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // print(items);
     if (context.watch<ItemsProvider>().isDataLoaded) {
       return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          backgroundColor:  const Color.fromRGBO(98, 0, 238, 1),
+          backgroundColor: const Color.fromRGBO(98, 0, 238, 1),
           title: const Text('Calculate Bill'),
           centerTitle: true,
           actions: [
@@ -53,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           animatedIcon: AnimatedIcons.menu_close,
           openCloseDial: isDialOpen,
           foregroundColor: Colors.black,
-          backgroundColor: const Color.fromRGBO(3, 218, 197,1),
+          backgroundColor: const Color.fromRGBO(3, 218, 197, 1),
           overlayColor: Colors.grey,
           overlayOpacity: 0.5,
           spacing: 15,
@@ -69,8 +74,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.edit_rounded),
                 label: 'Edit',
                 onTap: () {
-                  
                   Navigator.pushNamed(context, EditItemsScreen.route);
+                }),
+            SpeedDialChild(
+                child: const Center(child: Icon(FontAwesomeIcons.fileExport,size: 20,)),
+                label: 'Export',
+                onTap: () {
+                  FileHandler.exportData(ItemList(items)).then((value) {
+                    if (value)
+                      {
+                        CustomSnackBar.showSnackBar('File Downloaded To Downloads Folder',context);
+                        return;
+                      }
+                        CustomSnackBar.showSnackBar('SomeThing Went Wrong', context);
+
+                  });
                 }),
           ],
         ),
@@ -86,11 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             total.add(0);
                             controllers.add(TextEditingController());
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Card(
-                                key: Key(items[index].id.toString()),
+                            return Card(
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0))),
+                              elevation: 2,
+                              key: Key(items[index].id.toString()),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
                                 child: InkWell(
                                   onTap: () {},
                                   child: Row(
@@ -118,27 +140,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width:
                                             MediaQuery.of(context).size.width /
                                                 3,
-                                        child: TextField(
-                                          controller: controllers[index],
-                                          keyboardType: TextInputType.number,
-                                          style: const TextStyle(fontSize: 20),
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          onChanged: (numTxt) {
-                                            double t = 0;
-                                            if (numTxt.isNotEmpty) {
-                                              double quantity =
-                                                  double.parse(numTxt);
-                                              t = quantity * items[index].price;
-                                            }
+                                        child: SizedBox(
+                                          height: 50,
+                                          child: TextFormField(
+                                            controller: controllers[index],
+                                            keyboardType: TextInputType.number,
+                                            style: const TextStyle(fontSize: 20),
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            onChanged: (numTxt) {
+                                              double t = 0;
+                                              if (numTxt.isNotEmpty) {
+                                                double quantity =
+                                                    double.parse(numTxt);
+                                                t = quantity * items[index].price;
+                                              }
 
-                                            setState(() {
-                                              s -= total[index];
-                                              total[index] = t;
-                                              s += total[index];
-                                            });
-                                          },
+                                              setState(() {
+                                                s -= total[index];
+                                                total[index] = t;
+                                                s += total[index];
+                                              });
+                                            },
+                                          ),
                                         ),
                                       ),
                                       SizedBox(
@@ -156,20 +181,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }),
                     ),
-                    SizedBox(
-                      height: 50,
-                      child: Center(
-                          child: Text(
-                        'Total: $s',
-                        style: const TextStyle(fontSize: 30),
-                      )),
-                    )
+
                   ],
                 ))
               : const Text(
                   "Please Add Items",
                   style: TextStyle(fontSize: 30),
                 ),
+        ),
+        bottomNavigationBar: SizedBox(
+          height: 50,
+          child: Center(
+              child: Text(
+                'Total: $s',
+                style: const TextStyle(fontSize: 30),
+              )),
         ),
       );
     }

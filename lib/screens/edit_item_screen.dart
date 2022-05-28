@@ -1,6 +1,6 @@
-import 'dart:math';
 
 import 'package:bill_calculator/helpers/custom_dialog.dart';
+import 'package:bill_calculator/helpers/custom_snackbar.dart';
 import 'package:bill_calculator/models/Item.dart';
 import 'package:bill_calculator/providers/items_provider.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +15,11 @@ class EditItemsScreen extends StatefulWidget {
 }
 
 class _EditItemsScreenState extends State<EditItemsScreen> {
+
+  double customMargin = 5;
   @override
   Widget build(BuildContext context) {
     List<Item> items = context.watch<ItemsProvider>().items.items;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Items'),
@@ -33,15 +34,15 @@ class _EditItemsScreenState extends State<EditItemsScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height - 100,
                       child: ReorderableListView.builder(
+                        shrinkWrap: true,
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             return Card(
                               key:  ValueKey(items[index].id),
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0))),
+                                      BorderRadius.all(Radius.circular(10.0))),
                               elevation: 2,
-                              margin: const EdgeInsets.all(10.0),
                               child: ExpansionTile(
                                 trailing: const Icon(Icons.edit_rounded),
                                 title: Column(
@@ -149,6 +150,7 @@ class _EditFormState extends State<EditForm> {
                       });
                     },
                     decoration: const InputDecoration(
+                      label: Text('Name'),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -175,6 +177,7 @@ class _EditFormState extends State<EditForm> {
                       });
                     },
                     decoration: const InputDecoration(
+                      label: Text('Price'),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -189,7 +192,7 @@ class _EditFormState extends State<EditForm> {
                     child: ElevatedButton(
                         onPressed: () {
                           FormState? currentState = _formKey.currentState;
-                          print(_data.name);
+
                           if (currentState == null ||
                               !currentState.validate()) {
                             return;
@@ -201,17 +204,16 @@ class _EditFormState extends State<EditForm> {
                           if (name.isNotEmpty && price != 0) {
                             items[index].name = name;
                             items[index].price = price;
-                            print(items[index].price);
                             ItemsProvider itemProvider =
                                 Provider.of<ItemsProvider>(context,
                                     listen: false);
 
-                            items.sort((a, b) => a.name.compareTo(b.name));
-                            itemProvider.update(ItemList(items)).then((value) =>
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Item Edited Successfully'))));
+                            itemProvider.update(ItemList(items)).then((value) {
+
+                              CustomSnackBar.showSnackBar('Item Edited Successfully',context);
+                            }
+    );
+
                           }
                         },
                         child: const Text('Edit'))),
@@ -234,8 +236,11 @@ class _EditFormState extends State<EditForm> {
                                   widget.items.removeAt(widget.index);
                                   itemProvider
                                       .update(ItemList(widget.items))
-                                      .then((value) =>
-                                          Navigator.of(context).pop());
+                                      .then((value) {
+
+                                          Navigator.of(context).pop();
+                                          CustomSnackBar.showSnackBar('Item Deleted Successfully',context);
+                                      });
                                 },
                               );
                             });

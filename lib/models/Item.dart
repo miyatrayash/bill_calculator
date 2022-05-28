@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class Item {
   String id;
@@ -7,7 +6,7 @@ class Item {
 
   Item({required this.id, required this.name, required this.price});
   factory Item.fromJson(dynamic json) {
-    return Item(id: json['id'] , name: json['name'] as String, price: json['price'] as double);
+    return Item(id: json['id'] , name: json['name'] as String, price: json['price']);
   }
 
   Map toJson() => {
