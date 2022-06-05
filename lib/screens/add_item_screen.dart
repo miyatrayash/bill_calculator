@@ -1,6 +1,5 @@
 import 'package:awesome_icons/awesome_icons.dart';
 import 'package:bill_calculator/helpers/custom_snackbar.dart';
-import 'package:bill_calculator/helpers/file_handler.dart';
 import 'package:bill_calculator/models/Item.dart';
 import 'package:bill_calculator/providers/items_provider.dart';
 import 'package:flutter/material.dart';
