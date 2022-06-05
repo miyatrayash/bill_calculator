@@ -1,7 +1,4 @@
 
-import 'package:awesome_icons/awesome_icons.dart';
-import 'package:bill_calculator/helpers/custom_snackbar.dart';
-import 'package:bill_calculator/helpers/file_handler.dart';
 import 'package:bill_calculator/models/Item.dart';
 import 'package:bill_calculator/providers/items_provider.dart';
 import 'package:bill_calculator/screens/add_item_screen.dart';
@@ -26,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Item> items = context.watch<ItemsProvider>().items.items;
+    List<Item> items = context.watch<ItemsProvider>().items;
     // print(items);
     if (context.watch<ItemsProvider>().isDataLoaded) {
       return Scaffold(
@@ -76,20 +73,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.pushNamed(context, EditItemsScreen.route);
                 }),
-            SpeedDialChild(
-                child: const Center(child: Icon(FontAwesomeIcons.fileExport,size: 20,)),
-                label: 'Export',
-                onTap: () {
-                  FileHandler.exportData(ItemList(items)).then((value) {
-                    if (value)
-                      {
-                        CustomSnackBar.showSnackBar('File Downloaded To Downloads Folder',context);
-                        return;
-                      }
-                        CustomSnackBar.showSnackBar('SomeThing Went Wrong', context);
-
-                  });
-                }),
+            // SpeedDialChild(
+            //     child: const Center(child: Icon(FontAwesomeIcons.fileExport,size: 20,)),
+            //     label: 'Export',
+            //     onTap: () {
+            //       // FileHandler.exportData(ItemList(items)).then((value) {
+            //       //   if (value)
+            //       //     {
+            //       //       CustomSnackBar.showSnackBar('File Downloaded To Downloads Folder',context);
+            //       //       return;
+            //       //     }
+            //       //       CustomSnackBar.showSnackBar('SomeThing Went Wrong', context);
+            //       //
+            //       // });
+            //     }),
           ],
         ),
         body: Center(
@@ -103,13 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             total.add(0);
+                            // print(items[index].index);
                             controllers.add(TextEditingController());
                             return Card(
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(20.0))),
                               elevation: 2,
-                              key: Key(items[index].id.toString()),
+                              key: Key(items[index].id),
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 10.0),
@@ -199,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
-
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),

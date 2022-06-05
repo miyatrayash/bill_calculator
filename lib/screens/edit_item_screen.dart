@@ -19,7 +19,7 @@ class _EditItemsScreenState extends State<EditItemsScreen> {
   double customMargin = 5;
   @override
   Widget build(BuildContext context) {
-    List<Item> items = context.watch<ItemsProvider>().items.items;
+    List<Item> items = context.watch<ItemsProvider>().items;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Items'),
@@ -74,7 +74,8 @@ class _EditItemsScreenState extends State<EditItemsScreen> {
                           final item =items.removeAt(oldIndex);
                           items.insert(newIndex, item);
                           ItemsProvider itemProvider = Provider.of<ItemsProvider>(context,listen: false);
-                          itemProvider.update(ItemList(items));
+                          print(items[0].name);
+                          itemProvider.updateIndex(items,oldIndex,newIndex);
                         });
                       },),
                     ),
@@ -208,7 +209,7 @@ class _EditFormState extends State<EditForm> {
                                 Provider.of<ItemsProvider>(context,
                                     listen: false);
 
-                            itemProvider.update(ItemList(items)).then((value) {
+                            itemProvider.update(items[index]).then((value) {
 
                               CustomSnackBar.showSnackBar('Item Edited Successfully',context);
                             }
@@ -233,9 +234,10 @@ class _EditFormState extends State<EditForm> {
                                   ItemsProvider itemProvider =
                                       Provider.of<ItemsProvider>(context,
                                           listen: false);
+
                                   widget.items.removeAt(widget.index);
                                   itemProvider
-                                      .update(ItemList(widget.items))
+                                      .delete(items[index].id)
                                       .then((value) {
 
                                           Navigator.of(context).pop();

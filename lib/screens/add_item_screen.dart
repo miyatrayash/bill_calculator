@@ -39,21 +39,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
     ItemsProvider itemsProvider =
         Provider.of<ItemsProvider>(context, listen: false);
 
-    if (itemsProvider.items.items.any((element) => element.name == name)) {
-      CustomSnackBar.showSnackBar(name, context);
+    if (itemsProvider.items.any((element) => element.name == name)) {
+      CustomSnackBar.showSnackBar('$name is already exist', context);
       return;
     }
 
-    itemsProvider.items.items.add(Item(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: name,
-        price: price));
+    itemsProvider
+        .add(Item(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: name,
+            price: price))
+        .then((value) {
+      _nameController.text = '';
+      _priceController.text = '';
 
-    itemsProvider.items.items.sort((a, b) => a.name.compareTo(b.name));
-    itemsProvider.update(itemsProvider.items).then((value) {
-      _nameController.text = "";
-      _priceController.text = "";
-      CustomSnackBar.showSnackBar("Item Added Successfully", context);
+      CustomSnackBar.showSnackBar('Item Added Successfully', context);
     });
   }
 
@@ -71,16 +71,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
         overlayOpacity: 0.5,
         spacing: 15,
         spaceBetweenChildren: 15,
-        children: [
-          SpeedDialChild(
-              child: const Center(
-                  child: Icon(FontAwesomeIcons.fileImport, size: 20)),
-              label: 'Import',
-              onTap: () {
-                FileHandler.importData().then((value) {
-                  CustomSnackBar.showSnackBar(value, context);
-                });
-              })
+        children: const [
+          // SpeedDialChild(
+          //     child: const Center(
+          //         child: Icon(FontAwesomeIcons.fileImport, size: 20)),
+          //     label: 'Import',
+          //     onTap: () {
+          //       FileHandler.importData().then((value) {
+          //         CustomSnackBar.showSnackBar(value, context);
+          //       });
+          //     })
         ],
       ),
       appBar: AppBar(
